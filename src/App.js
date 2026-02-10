@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 
-export default function App() {
+function App() {
   const generateRandomHex = () => {
     const hex = Math.floor(Math.random() * 16777215).toString(16).padStart(6, '0');
-    return `#${hex}`;
+    return '#' + hex;
   };
 
   const initialColor = generateRandomHex();
@@ -36,7 +36,7 @@ export default function App() {
   };
 
   const rgbToHex = (r, g, b) => {
-    return `#${[r, g, b].map(x => x.toString(16).padStart(2, '0')).join('')}`;
+    return '#' + [r, g, b].map(x => x.toString(16).padStart(2, '0')).join('');
   };
 
   const isValidHex = (hex) => {
@@ -46,7 +46,7 @@ export default function App() {
 
   const normalizeHex = (hex) => {
     hex = hex.replace('#', '');
-    return `#${hex.toLowerCase()}`;
+    return '#' + hex.toLowerCase();
   };
 
   const handleInputChange = (e) => {
@@ -88,26 +88,30 @@ export default function App() {
     setTimeout(() => setCopied(false), 2000);
   };
 
+  const sliderStyle = {
+    background: 'linear-gradient(to right, #000 0%, #fff 100%)',
+  };
+
   return (
     <div 
       className="min-h-screen flex flex-col items-center justify-center transition-colors duration-700 ease-in-out relative"
       style={{ backgroundColor: color }}
     >
-      <div className="flex flex-col items-center gap-8 animate-fadeIn w-full max-w-2xl px-4">
+      <div className="flex flex-col items-center gap-8 w-full max-w-2xl px-4">
         <div className="flex flex-col items-center gap-3">
           <input
             type="text"
             value={inputValue}
             onChange={handleInputChange}
-            className="text-6xl md:text-8xl font-mono font-bold text-center tracking-wider bg-transparent border-none outline-none transition-colors duration-700 select-all px-4"
+            className="text-6xl md:text-8xl font-mono font-bold text-center tracking-wider bg-transparent border-none outline-none transition-colors duration-700 px-4"
             style={{ 
               color: contrastColor,
-              textShadow: `0 0 40px ${isLightColor ? 'rgba(0,0,0,0.1)' : 'rgba(255,255,255,0.2)'}`,
+              textShadow: '0 0 40px ' + (isLightColor ? 'rgba(0,0,0,0.1)' : 'rgba(255,255,255,0.2)'),
             }}
           />
           {error && (
             <p 
-              className="text-sm max-w-md text-center px-4 py-2 rounded animate-fadeIn"
+              className="text-sm max-w-md text-center px-4 py-2 rounded"
               style={{ 
                 color: contrastColor,
                 opacity: 0.8,
@@ -124,7 +128,7 @@ export default function App() {
             className="group relative px-6 py-3 font-semibold tracking-wide transition-all duration-300 overflow-hidden rounded-lg w-full md:w-auto"
             style={{ 
               color: contrastColor,
-              border: `2px solid ${contrastColor}`,
+              border: '2px solid ' + contrastColor,
             }}
           >
             <span className="relative z-10 flex items-center justify-center gap-2">
@@ -144,7 +148,7 @@ export default function App() {
             className="group relative px-6 py-3 font-semibold tracking-wide transition-all duration-300 overflow-hidden rounded-lg w-full md:w-auto"
             style={{ 
               color: contrastColor,
-              border: `2px solid ${contrastColor}`,
+              border: '2px solid ' + contrastColor,
             }}
           >
             <span className="relative z-10 flex items-center justify-center gap-2">
@@ -169,30 +173,40 @@ export default function App() {
           >
             <span className="flex items-center justify-center gap-2">
               {copied ? (
-                <>
+                <React.Fragment>
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                   </svg>
                   Copied!
-                </>
+                </React.Fragment>
               ) : (
-                <>
+                <React.Fragment>
                   <svg className="w-4 h-4 transition-transform duration-300 group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
                   </svg>
                   Copy
-                </>
+                </React.Fragment>
               )}
             </span>
           </button>
         </div>
 
         {showSliders && (
-          <div className="flex flex-col gap-6 mt-8 w-full max-w-sm px-6 animate-fadeIn">
+          <div className="flex flex-col gap-6 mt-8 w-full max-w-sm px-6">
             {['r', 'g', 'b'].map((channel) => {
               const rgb = hexToRgb(color);
               const value = rgb[channel];
               const label = channel.toUpperCase();
+              const minColor = rgbToHex(
+                channel === 'r' ? 0 : rgb.r,
+                channel === 'g' ? 0 : rgb.g,
+                channel === 'b' ? 0 : rgb.b
+              );
+              const maxColor = rgbToHex(
+                channel === 'r' ? 255 : rgb.r,
+                channel === 'g' ? 255 : rgb.g,
+                channel === 'b' ? 255 : rgb.b
+              );
               
               return (
                 <div key={channel} className="flex flex-col gap-2">
@@ -218,17 +232,7 @@ export default function App() {
                     onChange={(e) => handleSliderChange(channel, e.target.value)}
                     className="slider w-full h-2 rounded-full appearance-none cursor-pointer"
                     style={{
-                      background: `linear-gradient(to right, 
-                        ${rgbToHex(
-                          channel === 'r' ? 0 : rgb.r,
-                          channel === 'g' ? 0 : rgb.g,
-                          channel === 'b' ? 0 : rgb.b
-                        )} 0%, 
-                        ${rgbToHex(
-                          channel === 'r' ? 255 : rgb.r,
-                          channel === 'g' ? 255 : rgb.g,
-                          channel === 'b' ? 255 : rgb.b
-                        )} 100%)`,
+                      background: 'linear-gradient(to right, ' + minColor + ' 0%, ' + maxColor + ' 100%)',
                     }}
                   />
                 </div>
@@ -261,10 +265,6 @@ export default function App() {
             opacity: 1;
             transform: translateY(0);
           }
-        }
-
-        .animate-fadeIn {
-          animation: fadeIn 0.6s ease-out;
         }
 
         button {
@@ -308,3 +308,5 @@ export default function App() {
     </div>
   );
 }
+
+export default App;
