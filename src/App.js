@@ -256,6 +256,28 @@ function App() {
       </a>
 
       <style>{`
+        body, html {
+    overflow: hidden;
+  }
+
+  * {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  *::-webkit-scrollbar {
+    display: none;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
         @keyframes fadeIn {
           from {
             opacity: 0;
